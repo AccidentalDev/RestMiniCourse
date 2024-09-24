@@ -29,5 +29,5 @@ interface APIInterface {
 
     @FormUrlEncoded
     @POST("/api/users?")
-    Call<UserList> doCreateUserWithField(@Field("name") String name, @Field("job") String job);
+    Call<User> doCreateUserWithField(@Field("name") String name, @Field("job") String job);
 }

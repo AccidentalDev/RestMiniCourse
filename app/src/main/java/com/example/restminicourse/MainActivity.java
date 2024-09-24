@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view){
+        responseText.setText("Loading...");
         if(view == buttonTest1){
             Toast.makeText(getApplicationContext(), "GET list resources TEST", Toast.LENGTH_LONG).show();
             //GET list resources
@@ -136,26 +137,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (view == buttonTest4) {
             Toast.makeText(getApplicationContext(), "POST name and job URL encoded TEST", Toast.LENGTH_LONG).show();
             //POST name and job URL encoded
-            Call<UserList> callUsers2 = apiInterface.doCreateUserWithField("Morpheus", "Leader");
-            callUsers2.enqueue(new Callback<UserList>() {
+            Call<User> callUsers2 = apiInterface.doCreateUserWithField("Morpheus", "Leader");
+            callUsers2.enqueue(new Callback<User>() {
                 @Override
-                public void onResponse(Call<UserList> call, Response<UserList> response) {
-                    UserList userList = response.body();
-                    Integer text = userList.page;
-                    Integer total = userList.total;
-                    Integer totalPages = userList.totalPages;
-                    List<UserList.Datum> datumList = userList.data;
+                public void onResponse(Call<User> call, Response<User> response) {
+                    User userResponse = response.body();
 
-                    String finalText = text+" Page\n"+total+" Total\n"+totalPages+" Total Pages\n";
-                    for(UserList.Datum datum : datumList){
-                        finalText = finalText+"id: "+datum.id+" Name: "+datum.first_name+" "+datum.last_name+" Avatar: "+ datum.avatar+"\n";
-                    }
-
-                    responseText.setText(finalText);
+                    String newResponse = userResponse.name+", "+userResponse.job+", "+userResponse.id+", "+userResponse.createdAt;
+                    responseText.setText(newResponse);
                 }
 
                 @Override
-                public void onFailure(Call<UserList> call, Throwable t) {
+                public void onFailure(Call<User> call, Throwable t) {
                     call.cancel();
                 }
             });
