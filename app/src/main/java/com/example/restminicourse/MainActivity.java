@@ -2,6 +2,8 @@ package com.example.restminicourse;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,8 +23,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    Button buttonTest1;
+    Button buttonTest2;
+    Button buttonTest3;
+    Button buttonTest4;
     TextView responseText;
+
     APIInterface apiInterface;
 
     @Override
@@ -40,94 +47,118 @@ public class MainActivity extends AppCompatActivity {
         responseText = findViewById(R.id.responseText);
         apiInterface = APIClient.getClient().create(APIInterface.class);
 
-        //GET list resources
-        Call<MultipleResource> call = apiInterface.doGetListResources();
-        call.enqueue(new Callback<MultipleResource>() {
-            @Override
-            public void onResponse(Call<MultipleResource> call, Response<MultipleResource> response) {
-                Log.d("RESTUT", response.code()+"");
+        buttonTest1 = findViewById(R.id.Button1);
+        buttonTest2 = findViewById(R.id.Button2);
+        buttonTest3 = findViewById(R.id.Button3);
+        buttonTest4 = findViewById(R.id.Button4);
 
-                String displayResponse = "";
-                MultipleResource resource = response.body();
-                Integer text = resource.page;
-                Integer total = resource.total;
-                Integer totalPages = resource.totalPages;
-                List<MultipleResource.Datum> datumList = resource.data;
+        buttonTest1.setOnClickListener(this);
+        buttonTest2.setOnClickListener(this);
+        buttonTest3.setOnClickListener(this);
+        buttonTest4.setOnClickListener(this);
 
-                displayResponse += text+" Page\n"+total+" Total\n"+totalPages+" Total Pages\n";
-                for(MultipleResource.Datum datum : datumList){
-                    displayResponse += datum.id+" "+datum.name+" "+datum.pantoneValue+" "+ datum.year+"\n";
+    }
+
+    @Override
+    public void onClick(View view){
+        if(view == buttonTest1){
+            Toast.makeText(getApplicationContext(), "GET list resources TEST", Toast.LENGTH_LONG).show();
+            //GET list resources
+            Call<MultipleResource> call = apiInterface.doGetListResources();
+            call.enqueue(new Callback<MultipleResource>() {
+                @Override
+                public void onResponse(Call<MultipleResource> call, Response<MultipleResource> response) {
+                    Log.d("RESTUT", response.code()+"");
+
+                    String displayResponse = "";
+                    MultipleResource resource = response.body();
+                    Integer text = resource.page;
+                    Integer total = resource.total;
+                    Integer totalPages = resource.totalPages;
+                    List<MultipleResource.Datum> datumList = resource.data;
+
+                    displayResponse += text+" Page\n"+total+" Total\n"+totalPages+" Total Pages\n";
+                    for(MultipleResource.Datum datum : datumList){
+                        displayResponse += datum.id+" "+datum.name+" "+datum.pantoneValue+" "+ datum.year+"\n";
+                    }
+                    responseText.setText(displayResponse);
                 }
-                responseText.setText(displayResponse);
-            }
 
-            @Override
-            public void onFailure(Call<MultipleResource> call, Throwable t) {
-                call.cancel();
-            }
-        });
-
-        //Create new user
-        User user = new User("Morpheus", "Leader");
-        Call<User> userCall = apiInterface.createUser(user);
-        userCall.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                User tmpUser = response.body();
-                Toast.makeText(getApplicationContext(), tmpUser.name+" "+tmpUser.job+" "+tmpUser.id+" "+tmpUser.createdAt, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                call.cancel();
-            }
-        });
-
-        //GET list users
-        Call<UserList> callUsers = apiInterface.doGetUserList("2");
-        callUsers.enqueue(new Callback<UserList>() {
-            @Override
-            public void onResponse(Call<UserList> call, Response<UserList> response) {
-                UserList userList = response.body();
-                Integer text = userList.page;
-                Integer total = userList.total;
-                Integer totalPages = userList.totalPages;
-                List<UserList.Datum> datumList = userList.data;
-
-                Toast.makeText(getApplicationContext(), text+" Page\n"+total+" Total\n"+totalPages+" Total Pages\n", Toast.LENGTH_SHORT).show();
-                for(UserList.Datum datum : datumList){
-                    Toast.makeText(getApplicationContext(), "id: "+datum.id+" Name: "+datum.first_name+" "+datum.last_name+" Avatar: "+ datum.avatar, Toast.LENGTH_SHORT).show();
+                @Override
+                public void onFailure(Call<MultipleResource> call, Throwable t) {
+                    call.cancel();
                 }
-            }
-
-            @Override
-            public void onFailure(Call<UserList> call, Throwable t) {
-                call.cancel();
-            }
-        });
-
-        //POST name and job URL encoded
-        Call<UserList> callUsers2 = apiInterface.doCreateUserWithField("Morpheus", "Leader");
-        callUsers2.enqueue(new Callback<UserList>() {
-            @Override
-            public void onResponse(Call<UserList> call, Response<UserList> response) {
-                UserList userList = response.body();
-                Integer text = userList.page;
-                Integer total = userList.total;
-                Integer totalPages = userList.totalPages;
-                List<UserList.Datum> datumList = userList.data;
-
-                Toast.makeText(getApplicationContext(), text+" Page\n"+total+" Total\n"+totalPages+" Total Pages\n", Toast.LENGTH_SHORT).show();
-                for(UserList.Datum datum : datumList){
-                    Toast.makeText(getApplicationContext(), "id: "+datum.id+" Name: "+datum.first_name+" "+datum.last_name+" Avatar: "+ datum.avatar, Toast.LENGTH_SHORT).show();
+            });
+        }else if(view == buttonTest2){
+            Toast.makeText(getApplicationContext(), "Create new user TEST", Toast.LENGTH_LONG).show();
+            //Create new user
+            User user = new User("Morpheus", "Leader");
+            Call<User> userCall = apiInterface.createUser(user);
+            userCall.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    User tmpUser = response.body();
+                    String newResponse = tmpUser.name+", "+tmpUser.job+", "+tmpUser.id+", "+tmpUser.createdAt;
+                    responseText.setText(newResponse);
                 }
-            }
 
-            @Override
-            public void onFailure(Call<UserList> call, Throwable t) {
-                call.cancel();
-            }
-        });
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    call.cancel();
+                }
+            });
+        }else if(view == buttonTest3){
+            Toast.makeText(getApplicationContext(), "GET list users TEST", Toast.LENGTH_LONG).show();
+            //GET list users
+            Call<UserList> callUsers = apiInterface.doGetUserList("2");
+            callUsers.enqueue(new Callback<UserList>() {
+                @Override
+                public void onResponse(Call<UserList> call, Response<UserList> response) {
+                    UserList userList = response.body();
+                    Integer text = userList.page;
+                    Integer total = userList.total;
+                    Integer totalPages = userList.totalPages;
+                    List<UserList.Datum> datumList = userList.data;
 
+                    String resultText = text+" Page\n"+total+" Total\n"+totalPages+" Total Pages\n";
+                    for(UserList.Datum datum : datumList){
+                        resultText = resultText+"id: "+datum.id+" Name: "+datum.first_name+" "+datum.last_name+" Avatar: "+datum.avatar+"\n";
+                    }
+
+                    responseText.setText(resultText);
+                }
+
+                @Override
+                public void onFailure(Call<UserList> call, Throwable t) {
+                    call.cancel();
+                }
+            });
+        } else if (view == buttonTest4) {
+            Toast.makeText(getApplicationContext(), "POST name and job URL encoded TEST", Toast.LENGTH_LONG).show();
+            //POST name and job URL encoded
+            Call<UserList> callUsers2 = apiInterface.doCreateUserWithField("Morpheus", "Leader");
+            callUsers2.enqueue(new Callback<UserList>() {
+                @Override
+                public void onResponse(Call<UserList> call, Response<UserList> response) {
+                    UserList userList = response.body();
+                    Integer text = userList.page;
+                    Integer total = userList.total;
+                    Integer totalPages = userList.totalPages;
+                    List<UserList.Datum> datumList = userList.data;
+
+                    String finalText = text+" Page\n"+total+" Total\n"+totalPages+" Total Pages\n";
+                    for(UserList.Datum datum : datumList){
+                        finalText = finalText+"id: "+datum.id+" Name: "+datum.first_name+" "+datum.last_name+" Avatar: "+ datum.avatar+"\n";
+                    }
+
+                    responseText.setText(finalText);
+                }
+
+                @Override
+                public void onFailure(Call<UserList> call, Throwable t) {
+                    call.cancel();
+                }
+            });
+        }
     }
 }
